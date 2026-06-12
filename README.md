@@ -2,7 +2,41 @@
 
 valley.town의 [월가아재 시황칼럼 - 오늘의 핵심뉴스](https://www.valley.town/premium/wsaj-column/daily-news)에
 올라온 **최근 N일치 게시물**을 자동으로 수집하고, DeepSeek 또는 Claude API로 요약해
-기간 시황 브리핑 문서(마크다운)를 만듭니다. 핸드폰에서 쓸 수 있는 웹 UI도 포함되어 있습니다.
+기간 시황 브리핑 문서를 만듭니다.
+
+## ☁️ 핸드폰 전용 사용법 (컴퓨터 없이) — GitHub Actions + 텔레그램
+
+**매주 토요일 아침 8시(KST)** GitHub Actions가 자동으로 일주일치 뉴스를 요약해서
+**텔레그램 메시지로 보내줍니다.** 컴퓨터가 꺼져 있어도 동작합니다.
+
+### 최초 설정 (텔레그램 봇, 5분)
+
+1. 텔레그램에서 **@BotFather** 검색 → `/newbot` → 봇 이름/아이디 입력 → **토큰** 받기
+2. 만들어진 봇에게 아무 메시지나 하나 보내기 (예: "안녕")
+3. 받은 토큰을 GitHub 저장소 시크릿에 등록:
+   - `TELEGRAM_BOT_TOKEN`: BotFather가 준 토큰
+   - `TELEGRAM_CHAT_ID`: `https://api.telegram.org/bot<토큰>/getUpdates` 접속 →
+     `"chat":{"id":숫자}` 부분의 숫자
+   - 등록 위치: 저장소 → Settings → Secrets and variables → Actions
+
+### 원할 때 즉시 실행 (수동 트리거)
+
+GitHub 모바일 앱(또는 브라우저) → `valley-news-summarizer` 저장소 →
+**Actions → 주간 시황뉴스 요약 → Run workflow** → 일수/모델 선택 후 실행.
+몇 분 뒤 텔레그램으로 요약이 도착합니다.
+
+### 등록된 시크릿
+
+| 시크릿 | 용도 |
+|---|---|
+| `VALLEY_EMAIL` / `VALLEY_PASSWORD` | valley.town 로그인 |
+| `DEEPSEEK_API_KEY` | DeepSeek 요약 (기본) |
+| `ANTHROPIC_API_KEY` | Claude 요약 / 딥시크 잔액 부족 시 자동 폴백 |
+| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | 텔레그램 전송 |
+
+---
+
+이하는 맥에서 직접 실행하는 방법입니다.
 
 ## 설치 (최초 1회)
 
