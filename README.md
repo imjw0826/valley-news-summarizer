@@ -9,77 +9,11 @@ valley.town의 [월가아재 시황칼럼 - 오늘의 핵심뉴스](https://www.
 **매주 토요일 아침 8시(KST)** GitHub Actions가 자동으로 일주일치 뉴스를 요약해서
 **텔레그램 메시지로 보내줍니다.** 컴퓨터가 꺼져 있어도 동작합니다.
 
-### 최초 설정 (텔레그램 봇, 5분)
-
-1. 텔레그램에서 **@BotFather** 검색 → `/newbot` → 봇 이름/아이디 입력 → **토큰** 받기
-2. 만들어진 봇에게 아무 메시지나 하나 보내기 (예: "안녕")
-3. 받은 토큰을 GitHub 저장소 시크릿에 등록:
-   - `TELEGRAM_BOT_TOKEN`: BotFather가 준 토큰
-   - `TELEGRAM_CHAT_ID`: `https://api.telegram.org/bot<토큰>/getUpdates` 접속 →
-     `"chat":{"id":숫자}` 부분의 숫자
-   - 등록 위치: 저장소 → Settings → Secrets and variables → Actions
-
 ### 원할 때 즉시 실행 (수동 트리거)
 
 GitHub 모바일 앱(또는 브라우저) → `valley-news-summarizer` 저장소 →
 **Actions → 주간 시황뉴스 요약 → Run workflow** → 일수/모델 선택 후 실행.
 몇 분 뒤 텔레그램으로 요약이 도착합니다.
-
-### 등록된 시크릿
-
-| 시크릿 | 용도 |
-|---|---|
-| `VALLEY_EMAIL` / `VALLEY_PASSWORD` | valley.town 로그인 |
-| `DEEPSEEK_API_KEY` | DeepSeek 요약 (기본) |
-| `ANTHROPIC_API_KEY` | Claude 요약 / 딥시크 잔액 부족 시 자동 폴백 |
-| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | 텔레그램 전송 |
-
----
-
-이하는 맥에서 직접 실행하는 방법입니다.
-
-## 설치 (최초 1회)
-
-```bash
-cd ~/Documents/valley-news-summarizer
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-playwright install chromium
-
-cp .env.example .env
-# .env 파일을 열어 valley.town 계정과 API 키(DeepSeek 또는 Anthropic)를 입력
-```
-
-## 사용법 1 — 명령줄
-
-```bash
-source .venv/bin/activate
-python valley_news.py                      # 최근 7일치, DeepSeek으로 요약
-python valley_news.py --days 3            # 최근 3일치
-python valley_news.py --provider claude   # Claude API 사용
-python valley_news.py --headed            # 브라우저 창을 띄워서 디버깅
-```
-
-결과는 `output/` 폴더에 마크다운으로 저장됩니다.
-
-## 사용법 2 — 웹 (핸드폰)
-
-맥에서 서버를 켜두고:
-
-```bash
-source .venv/bin/activate
-python app.py
-```
-
-실행하면 `📱 핸드폰에서 접속: http://<맥의 IP>:8765` 주소가 출력됩니다.
-**같은 와이파이에 연결된** 핸드폰 브라우저에서 그 주소로 접속하면:
-
-- 기간(1/3/7/14일)과 모델(deepseek/claude)을 골라 버튼 한 번으로 요약 생성
-- 생성된 문서를 핸드폰에서 바로 읽기
-
-> 맥이 켜져 있고 같은 네트워크에 있어야 합니다. 외부에서도 접속하고 싶으면
-> Tailscale(무료) 설치를 추천 — 설치 후 같은 주소 형식으로 어디서든 접속됩니다.
 
 ## 모델 / 비용
 
@@ -96,16 +30,3 @@ python app.py
 3. LLM으로 기간 전체를 종합한 시황 브리핑 생성 (테마별 정리 + 시장 흐름 + 투자 시사점)
 4. 마크다운 문서 저장 (원문 출처 링크 포함)
 
-## 매일 자동 실행 (선택)
-
-macOS에서 cron으로 매일 아침 8시에 실행하려면 `crontab -e` 후:
-
-```
-0 8 * * * cd $HOME/Documents/valley-news-summarizer && .venv/bin/python valley_news.py --days 1 >> output/run.log 2>&1
-```
-
-## 주의
-
-- `.env`와 `auth_state.json`에는 민감한 정보가 담기므로 절대 공유/커밋하지 마세요 (`.gitignore`에 포함됨).
-- 사이트 구조가 바뀌면 셀렉터(`collect_posts`)를 수정해야 할 수 있습니다.
-- 수집한 콘텐츠는 본인 구독 계정의 개인적 용도로만 사용하세요.
