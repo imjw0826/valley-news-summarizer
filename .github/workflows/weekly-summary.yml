@@ -1,9 +1,7 @@
 name: 주간 시황뉴스 요약
 
 on:
-  schedule:
-    # 매주 토요일 08:00 KST (= 금요일 23:00 UTC)
-    - cron: "0 23 * * 5"
+
   workflow_dispatch:
     inputs:
       days:
